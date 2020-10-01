@@ -28,6 +28,15 @@ services:
     networks:
       backend:
         ipv4_address: 10.2.0.120
+  syslog:
+    image: balabit/syslog-ng:latest
+    domainname: netlab
+    dns_search: netlab
+    hostname: gondor
+    dns: 10.1.0.2
+    networks:
+      backend:
+        ipv4_address: 10.2.0.121
   web:
     image: php:apache
     domainname: netlab
