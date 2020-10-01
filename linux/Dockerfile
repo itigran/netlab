@@ -1,5 +1,5 @@
 FROM centos:latest
-RUN yum install -y openssh-server net-tools tcpdump nc nmap bind-utils
+RUN yum install -y openssh-server openssl net-tools tcpdump nc nmap bind-utils
 ADD ssh_host_rsa_key /etc/ssh/ssh_host_rsa_key
 ADD ssh_host_ecdsa_key /etc/ssh/ssh_host_ecdsa_key
 ADD ssh_host_ed25519_key /etc/ssh/ssh_host_ed25519_key
