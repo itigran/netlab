@@ -1,0 +1,60 @@
+version: "3"
+services:
+
+  linux:
+    build: ./linux
+    domainname: netlab
+    dns_search: netlab
+    hostname: frodo
+    dns: 10.2.0.2
+    networks:
+      backend:
+        ipv4_address: 10.2.0.10
+  ubnt:
+    build: ./ubnt
+    domainname: netlab
+    dns_search: netlab
+    hostname: sam
+    dns: 10.2.0.2
+    networks:
+      backend:
+        ipv4_address: 10.2.0.15
+  web:
+    image: php:apache
+    domainname: netlab
+    dns_search: netlab
+    hostname: pony
+    dns: 10.1.0.2
+    volumes:
+      - ./web:/var/www/html
+    networks:
+      frontend:
+        ipv4_address: 10.1.0.100
+  dns:
+    image: strm/dnsmasq
+    domainname: netlab
+    dns_search: netlab
+    hostname: bree
+    volumes:
+      - ./dns/dnsmasq.conf:/etc/dnsmasq.conf
+    cap_add:
+      - NET_ADMIN
+    networks:
+      frontend:
+        ipv4_address: 10.1.0.2
+      backend:
+        ipv4_address: 10.2.0.2
+
+networks:
+  frontend:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: "10.1.0.1/16"
+  backend:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: "10.2.0.0/16"
