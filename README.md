@@ -7,3 +7,6 @@ with simple nodes that can be used to teach students techinques of network disco
 > docker-compose up -d
 ### Tear-down
 > docker-compose down
+
+### Copyright
+ All rights reserved.
