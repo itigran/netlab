@@ -6,48 +6,86 @@ services:
     domainname: netlab
     dns_search: netlab
     hostname: frodo
-    dns: 10.2.0.2
+    dns:
+      - 10.2.0.2
+    volumes:
+      - ./resolv.conf:/etc/resolv.conf
     networks:
       backend:
         ipv4_address: 10.2.0.10
+
   ubnt:
     build: ./ubnt
     domainname: netlab
     dns_search: netlab
     hostname: sam
     dns: 10.2.0.2
+    volumes:
+      - ./resolv.conf:/etc/resolv.conf
     networks:
       backend:
         ipv4_address: 10.2.0.15
+
   redis:
     image: redis:alpine
     domainname: netlab
     dns_search: netlab
     hostname: elrond
-    dns: 10.1.0.2
+    dns: 10.2.0.2
+    volumes:
+      - ./resolv.conf:/etc/resolv.conf
     networks:
       backend:
         ipv4_address: 10.2.0.120
+
   syslog:
     image: balabit/syslog-ng:latest
     domainname: netlab
     dns_search: netlab
     hostname: gondor
-    dns: 10.1.0.2
+    dns: 10.2.0.2
+    volumes:
+      - ./resolv.conf:/etc/resolv.conf
     networks:
       backend:
         ipv4_address: 10.2.0.121
+
   web:
     image: php:apache
     domainname: netlab
     dns_search: netlab
     hostname: pony
-    dns: 10.1.0.2
+    dns: 10.2.0.2
     volumes:
       - ./web:/var/www/html
+      - ./resolv.conf:/etc/resolv.conf
     networks:
-      frontend:
-        ipv4_address: 10.1.0.100
+      backend:
+        ipv4_address: 10.2.0.100
+
+  db:
+    image: mysql
+    restart: always
+    domainname: netlab
+    dns_search: netlab
+    hostname: moria
+    dns:
+      - 10.2.0.2
+    volumes:
+      - ./db:/docker-entrypoint-initdb.d
+      - ./resolv.conf:/etc/resolv.conf
+    environment:
+        MYSQL_ROOT_PASSWORD: abc123
+        MYSQL_RANDOM_ROOT_PASSWORD: "yes"
+        MYSQL_ONETIME_PASSWORD: "yes"
+        MYSQL_INITDB_SKIP_TZINFO: "yes"
+        MYSQL_DATABASE: "LOTR"
+        MYSQL_USER: "gandalf"
+        MYSQL_PASSWORD: "melon"
+    networks:
+      backend:
+        ipv4_address: 10.2.0.101
+
   dns:
     image: strm/dnsmasq
     domainname: netlab
@@ -58,21 +96,17 @@ services:
     cap_add:
       - NET_ADMIN
     networks:
-      frontend:
-        ipv4_address: 10.1.0.2
       backend:
         ipv4_address: 10.2.0.2
 
 networks:
-  frontend:
-    driver: bridge
-    ipam:
-      driver: default
-      config:
-        - subnet: "10.1.0.1/16"
+  #frontend:
+  #  driver: "bridge"
+  #  ipam:
+  #    config:
+  #      - subnet: "10.1.0.0/16"
   backend:
-    driver: bridge
+    driver: "bridge"
     ipam:
-      driver: default
       config:
         - subnet: "10.2.0.0/16"
