@@ -34,6 +34,7 @@ services:
     dns: 10.2.0.2
     volumes:
       - ./resolv.conf:/etc/resolv.conf
+      - ./redis/:/data
     networks:
       backend:
         ipv4_address: 10.2.0.120
